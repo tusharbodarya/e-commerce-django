@@ -2,6 +2,7 @@ from django.db import models
 from shortuuid.django_fields import ShortUUIDField
 from django.utils.html import mark_safe
 from userauths.models import User
+from taggit.managers import TaggableManager
 
 STATUS_CHOICE = (
     ("proccess", "Proccessing"),
@@ -53,6 +54,7 @@ class Vendor(models.Model):
 
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to=user_directory_path)
+    cover_image = models.ImageField(upload_to=user_directory_path, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
 
     address = models.CharField(max_length=100, default="")
@@ -62,8 +64,11 @@ class Vendor(models.Model):
     authantic_rating = models.CharField(max_length=100, default="100")
     day_return = models.CharField(max_length=100, default="100")
     warranty_period = models.CharField(max_length=100, default="100")
-
+    date = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name_plural = "Vendors"
@@ -80,7 +85,7 @@ class Products(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name="category")
-    vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True)
+    vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, related_name="product")
 
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to=user_directory_path)
@@ -90,8 +95,12 @@ class Products(models.Model):
     old_price = models.DecimalField(max_digits=9999999999, decimal_places=2, default="0.00")
 
     specifications = models.TextField(null=True, blank=True)
+    type = models.CharField(max_length=100, default="Organic")
+    stock_count = models.CharField(max_length=100, default="0")
+    expriry = models.CharField(max_length=100, default="")
+    mfd = models.DateTimeField(auto_now_add=False, null=True, blank=True)
 
-    # tags = models.ForeignKey(Tags, on_delete=models.SET_NULL, null=True)
+    tags = TaggableManager(blank=True)
     product_status = models.CharField(choices=STATUS, max_length=10, default="in_review")
     
     status = models.BooleanField(default=True)
@@ -118,7 +127,7 @@ class Products(models.Model):
 
 class ProductImages(models.Model):
     images = models.ImageField(upload_to='product-images')
-    product = models.ForeignKey(Products, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Products, related_name="product_images", on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
