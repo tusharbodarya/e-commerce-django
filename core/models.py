@@ -3,6 +3,7 @@ from shortuuid.django_fields import ShortUUIDField
 from django.utils.html import mark_safe
 from userauths.models import User
 from taggit.managers import TaggableManager
+from ckeditor_uploader.fields import RichTextUploadingField
 
 STATUS_CHOICE = (
     ("proccess", "Proccessing"),
@@ -55,7 +56,8 @@ class Vendor(models.Model):
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to=user_directory_path)
     cover_image = models.ImageField(upload_to=user_directory_path, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
+    # description = models.TextField(null=True, blank=True)
+    description = RichTextUploadingField(null=True, blank=True)
 
     address = models.CharField(max_length=100, default="")
     contact = models.CharField(max_length=100, default="")
@@ -89,12 +91,14 @@ class Products(models.Model):
 
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to=user_directory_path)
-    description = models.TextField(null=True, blank=True)
+    # description = models.TextField(null=True, blank=True)
+    description = RichTextUploadingField(null=True, blank=True)
 
     price = models.DecimalField(max_digits=9999999999, decimal_places=2, default="0.00")
     old_price = models.DecimalField(max_digits=9999999999, decimal_places=2, default="0.00")
 
-    specifications = models.TextField(null=True, blank=True)
+    # specifications = models.TextField(null=True, blank=True)
+    specifications = RichTextUploadingField(null=True, blank=True)
     type = models.CharField(max_length=100, default="Organic")
     stock_count = models.CharField(max_length=100, default="0")
     expriry = models.CharField(max_length=100, default="")
@@ -164,7 +168,7 @@ class CartOrderItems(models.Model):
 
 class ProductReview(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    product = models.ForeignKey(Products, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Products, on_delete=models.SET_NULL, null=True, related_name="reviews")
     review = models.TextField(null=True)
     rating = models.IntegerField(choices=RATING, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
