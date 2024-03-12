@@ -250,11 +250,11 @@
                                     <a href="shop-wishlist.html"><span class="lable">Wishlist</span></a>
                                 </div>
                                 <div class="header-action-icon-2">
-                                    <a class="mini-cart-icon" href="shop-cart.html">
+                                    <a class="mini-cart-icon" href="{% url 'core:cart' %}">
                                         <img alt="Nest" src="{% static 'assets/imgs/theme/icons/icon-cart.svg' %}" />
-                                        <span class="pro-count blue">2</span>
+                                        <span class="pro-count blue cart-items-count">{{request.session.cart_data_obj|length}}</span>
                                     </a>
-                                    <a href="shop-cart.html"><span class="lable">Cart</span></a>
+                                    <a href="{% url 'core:cart' %}"><span class="lable">Cart</span></a>
                                     <div class="cart-dropdown-wrap cart-dropdown-hm2">
                                         <ul>
                                             <li>
@@ -419,9 +419,9 @@
                                 </a>
                             </div>
                             <div class="header-action-icon-2">
-                                <a class="mini-cart-icon" href="shop-cart.html">
+                                <a class="mini-cart-icon" href="{% url 'core:cart' %}">
                                     <img alt="Nest" src="{% static 'assets/imgs/theme/icons/icon-cart.svg' %}" />
-                                    <span class="pro-count white">2</span>
+                                    <span class="pro-count white cart-items-count">{{request.session.cart_data_obj|length}}</span>
                                 </a>
                                 <div class="cart-dropdown-wrap cart-dropdown-hm2">
                                     <ul>
@@ -898,7 +898,7 @@
     <script src="{% static 'assets/js/plugins/magnific-popup.js' %}"></script>
     <script src="{% static 'assets/js/plugins/select2.min.js' %}"></script>
     <script src="{% static 'assets/js/plugins/waypoints.js' %}"></script>
-    <script src="{% static 'assets/js/plugins/counterup.js' %}"></script>
+    <!-- <script src="{% static 'assets/js/plugins/counterup.js' %}"></script> -->
     <script src="{% static 'assets/js/plugins/jquery.countdown.min.js' %}"></script>
     <script src="{% static 'assets/js/plugins/images-loaded.js' %}"></script>
     <script src="{% static 'assets/js/plugins/isotope.js' %}"></script>

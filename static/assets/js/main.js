@@ -581,10 +581,10 @@
     }
 
     /*---- CounterUp ----*/
-    $(".count").counterUp({
-        delay: 10,
-        time: 2000
-    });
+    // $(".count").counterUp({
+    //     delay: 10,
+    //     time: 2000
+    // });
 
     // Isotope active
     $(".grid").imagesLoaded(function () {

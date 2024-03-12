@@ -56,8 +56,16 @@ $("#reviewForm").submit(function(e){
 // filter products
 
 $(document).ready(function(){
-    $(".filter-checkbox").on("click",function(){
+    $(".filter-checkbox, #price-filter-btn").on("click",function(){
+
         let filter_object = {};
+
+        let min_price = $("#max_price").attr("min");
+        let max_price = $("#max_price").val();
+
+        filter_object.min_price = min_price;
+        filter_object.max_price = max_price;
+
         $(".filter-checkbox").each(function(){
             let filter_value = $(this).val();
             let filter_key = $(this).data("filter");
@@ -81,4 +89,58 @@ $(document).ready(function(){
             }
         })
     });
+
+    $("#max_price").on("blur",function(){
+        let min_price = $(this).attr("min");
+        let max_price = $(this).attr("max");
+        let current_price = $(this).val();
+
+        if(current_price < parseInt(min_price) || current_price > parseInt(max_price)){
+            min_price = Math.round(min_price * 100) / 100;
+            max_price = Math.round(max_price * 100) / 100;
+            alert("Price must between $"+ min_price + " and $"+ max_price);
+            $(this).val(min_price)
+            $("#range").val(min_price)
+            $(this).focus()
+            return false
+        }
+        console.log("current_price", current_price);
+        console.log("min_price", min_price);
+        console.log("max_price", max_price);
+    })
 });
+
+
+// Add to cart functinality
+
+$(".add-to-cart-btn").on("click",function(){
+    let this_val = $(this)
+    let _index = this_val.attr('data-index')
+    let id = $(".product-id-"+_index).val();
+    let title = $(".product-title-"+_index).val();
+    let price = $(".product-price-"+_index).val();
+    let quantity = $(".product-quantity-"+_index).val();
+    let pid = $(".product-pid-"+_index).val();
+    let image = $(".product-image-"+_index).val();
+
+    $.ajax({
+        url:"/add-to-cart",
+        data:{
+            'id':id,
+            'pid':pid,
+            'title':title,
+            'image':image,
+            'qty':quantity,
+            'price':price
+        },
+        dataType: 'json',
+        beforeSend: function(){
+            console.log("adding products to cart");
+        },
+        success: function(response){
+            this_val.html("✓");
+            console.log("added product into cart");
+            $(".cart-items-count").text(response.totalcartitems)
+        }
+    })
+})

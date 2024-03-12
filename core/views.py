@@ -1,10 +1,11 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from core.models import Products, Category, Vendor, CartOrder, CartOrderItems, Wishlist, Address, ProductImages, ProductReview
 from taggit.models import Tag
 from django.db.models import Avg
 from core.forms import ProductReviewForm
 from django.http import JsonResponse
 from django.template.loader import render_to_string
+from django.contrib import messages
 # Create your views here.
 def index(request):
     # products = Products.objects.all().order_by("-id")
@@ -137,8 +138,13 @@ def search_view(request):
 def filter_products(request):
     categories = request.GET.getlist('category[]')
     vendors = request.GET.getlist('vendors[]')
+    min_price = request.GET['min_price']
+    max_price = request.GET['max_price']
     
     products = Products.objects.filter(product_status="published").order_by('-id').distinct()
+    
+    products = products.filter(price__gte=min_price)
+    products = products.filter(price__lte=max_price)
     
     if len(categories) > 0:
         products = products.filter(category__id__in=categories).distinct()
@@ -152,3 +158,43 @@ def filter_products(request):
     data = render_to_string("core/async/product-list.html", context)
     
     return JsonResponse({'data':data})
+
+def add_to_cart(request):
+    cart_products = {}
+    cart_products[str(request.GET['id'])] = {
+        'pid':request.GET['pid'],
+        'image':request.GET['image'],
+        'title':request.GET['title'],
+        'qty':request.GET['qty'],
+        'price':request.GET['price'],
+    }
+    
+    if 'cart_data_obj' in request.session:
+        if str(request.GET['id']) in request.session['cart_data_obj']:
+            cart_data = request.session['cart_data_obj']
+            cart_data[str(request.GET['id'])]['qty'] = int(cart_products[str(request.GET['id'])]['qty'])
+            cart_data.update(cart_data)
+            request.session['cart_data_obj'] = cart_data
+        else:
+            cart_data = request.session['cart_data_obj']
+            cart_data.update(cart_products) 
+            request.session['cart_data_obj'] = cart_data
+    else:
+        request.session['cart_data_obj'] = cart_products
+    return JsonResponse({"data":request.session['cart_data_obj'], 'totalcartitems': len(request.session['cart_data_obj'])})
+
+def cart_view(request):
+    cart_total_amount = 0
+    if 'cart_data_obj' in request.session:
+        for pid, item in request.session['cart_data_obj'].items():
+            cart_total_amount += int(item['qty']) * float(item['price'])
+        context = {
+            "cart_data":request.session['cart_data_obj'],
+            "totalcartitems": len(request.session['cart_data_obj']),
+            "cart_total_amount": cart_total_amount
+        }
+        return render(request,"core/cart.html",context)
+    else:
+        messages.warning(request,"Your cart is empty.")
+        return redirect("core:index")
+        

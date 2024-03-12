@@ -132,7 +132,13 @@
                                             <span class="old-price">${{product.old_price}}</span>
                                         </div>
                                         <div class="add-cart">
-                                            <a class="add" href="shop-cart.html"><i class="fi-rs-shopping-cart mr-5"></i>Add </a>
+                                            <input type="hidden" name="product_quantity" class="product-quantity-{{product.id}}" value="1" />
+                                            <input type="hidden" name="product_pid" class="product-pid-{{product.id}}" value="{{ product.pid }}" />
+                                            <input type="hidden" name="product_id" class="product-id-{{product.id}}" value="{{ product.id }}" />
+                                            <input type="hidden" name="product_image" class="product-image-{{product.id}}" value="{{ product.image.url }}" />
+                                            <input type="hidden" name="product_title" class="product-title-{{product.id}}" value="{{ product.title }}" />
+                                            <input type="hidden" name="product_price" class="product-price-{{product.id}}" value="{{ product.price }}" />
+                                            <button class="add border-0 add-to-cart-btn" id="add-to-cart-btn" data-index="{{product.id}}"><i class="fi-rs-shopping-cart mr-5"></i>Add</button>
                                         </div>
                                     </div>
                                 </div>

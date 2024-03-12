@@ -1,8 +1,11 @@
 from core.models import Products, Category, Vendor, CartOrder, CartOrderItems, Wishlist, Address, ProductImages, ProductReview
+from django.db.models import Min, Max
 
 def default(request):
     categories = Category.objects.all()
     vendors = Vendor.objects.all()
+    
+    min_max_price = Products.objects.aggregate(Min("price"),Max("price"))
     try:
         address = Address.objects.get(user=request.user)
     except Exception:
@@ -10,5 +13,6 @@ def default(request):
     return {
         "categories": categories,
         "address": address,
-        "vendors": vendors
+        "vendors": vendors,
+        "min_max_price": min_max_price,
         }
