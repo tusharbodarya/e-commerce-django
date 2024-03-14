@@ -1,5 +1,5 @@
-from django.urls import path
-from core.views import index, category_list_view, product_list_view, product_detail_view, category_products_list_view, vendor_list_view, vendor_detail_view, tag_list_view, ajax_add_review, search_view, filter_products, add_to_cart, cart_view
+from django.urls import include, path
+from core.views import index, category_list_view, product_list_view, product_detail_view, category_products_list_view, vendor_list_view, vendor_detail_view, tag_list_view, ajax_add_review, search_view, filter_products, add_to_cart, cart_view, delete_item_from_cart, update_item_from_cart, checkout_view, payment_completed_view, payment_failed_view, customer_dashboard
 
 app_name = "core"
 urlpatterns = [
@@ -35,4 +35,25 @@ urlpatterns = [
     
     # cart-view
     path("cart/", cart_view, name="cart"),
+    
+    # delete cart items
+    path("delete-from-cart/", delete_item_from_cart, name="delete-from-cart"),
+
+    # update cart items
+    path("update-from-cart/", update_item_from_cart, name="update-from-cart"),
+    
+    # checkout page
+    path("checkout/", checkout_view, name="checkout"),
+    
+    # paypal payment
+    path("paypal/",include('paypal.standard.ipn.urls')),
+    
+    # payment successfull
+    path("payment-completed/", payment_completed_view, name="payment-completed"),
+    
+    # payment failed
+    path("payment-failed/", payment_failed_view, name="payment-failed"),
+    
+    # user dashboard
+    path("dashboard/", customer_dashboard, name="dashboard"),
 ]

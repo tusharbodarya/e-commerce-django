@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "taggit",
     "ckeditor",
+    "paypal.standard.ipn",
     "core",
     "userauths",
 ]
@@ -141,6 +142,8 @@ JAZZMIN_SETTINGS = {
 
 }
 
+LOGIN_URL = "userauths:sign-in"
+
 AUTH_USER_MODEL = 'userauths.User'
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_CONFIGS = {
@@ -167,3 +170,5 @@ CKEDITOR_CONFIGS = {
         ]),
     },
 }
+
+PAYPAL_TEST = True
