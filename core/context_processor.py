@@ -7,6 +7,10 @@ def default(request):
     
     min_max_price = Products.objects.aggregate(Min("price"),Max("price"))
     try:
+        wishlist = Wishlist.objects.filter(user=request.user)
+    except Exception:
+        wishlist = 0
+    try:
         address = Address.objects.get(user=request.user)
     except Exception:
         address = None
@@ -15,4 +19,5 @@ def default(request):
         "address": address,
         "vendors": vendors,
         "min_max_price": min_max_price,
+        "wishlist": wishlist,
         }

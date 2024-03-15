@@ -8,10 +8,10 @@ from django.template.loader import render_to_string
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
-from django.urls import reverse
-from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
-from paypal.standard.forms import PayPalPaymentsForm
+# from django.urls import reverse
+# from django.conf import settings
+# from django.views.decorators.csrf import csrf_exempt
+# from paypal.standard.forms import PayPalPaymentsForm
 # Create your views here.
 def index(request):
     # products = Products.objects.all().order_by("-id")
@@ -288,12 +288,15 @@ def checkout_view(request):
                 price=item['price'],
                 total=float(item['qty']) * float(item['price']),
             )
-            
-            
+    try:        
+        active_address = Address.objects.get(user=request.user,status=True)
+    except Exception as e:
+        messages.warning(request, "Only One address must be default.")        
     context = {
         "cart_data":request.session['cart_data_obj'],
         "totalcartitems": len(request.session['cart_data_obj']),
         "cart_total_amount": cart_total_amount,
+        "active_address": active_address,
         # "paypal_payment_button": paypal_payment_button,
     }
     return render(request,"core/checkout.html",context)
@@ -318,8 +321,69 @@ def payment_failed_view(request):
 
 @login_required
 def customer_dashboard(request):
+    
+    if request.method == "POST":
+        address = request.POST.get("address")
+        contact = request.POST.get("contact")
+        
+        new_address = Address.objects.create(
+            user=request.user,
+            address=address,
+            contact=contact
+        )
+        messages.success(request, "Address Added Successfully.")
+        return redirect("core:dashboard")
+    
+    
     orders = CartOrder.objects.filter(user=request.user).order_by("-id")
+    address = Address.objects.filter(user=request.user)
     context = {
-        "orders":orders
+        "orders":orders,
+        "address":address,
     }
     return render(request,"core/dashboard.html", context)
+
+@login_required
+def order_detail(request, id):
+    order = CartOrder.objects.get(user=request.user,id=id)
+    products = CartOrderItems.objects.filter(order=order)
+    context = {
+        "order":order,
+        "products":products,
+    }
+    return render(request,"core/order-detail.html", context)
+
+@login_required
+def make_default_address(request):
+    id = request.GET["id"]
+    Address.objects.filter(user=request.user).update(status=False)
+    Address.objects.filter(id=id).update(status=True)
+    
+    return JsonResponse({
+        "status":True
+    })
+    
+@login_required
+def add_to_wishlist(request):
+    product_id = request.GET["id"]
+    product = Products.objects.get(id=product_id)
+    wishlist_count = Wishlist.objects.filter(user=request.user,product=product).count()
+    status = True
+    if wishlist_count > 0:
+        status = False
+    else:
+        wishlist = Wishlist.objects.create(
+            user=request.user,
+            product=product
+        )
+    return JsonResponse({
+        "status":status
+    })
+
+@login_required
+def wishlist(request):
+    wishlists = Wishlist.objects.filter(user=request.user)
+    context = {
+        "wishlists":wishlists,
+    }
+    return render(request,"core/wishlist.html", context)

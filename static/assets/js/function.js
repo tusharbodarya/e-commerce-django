@@ -196,4 +196,52 @@ $(document).ready(function(){
             }
         })
     })
+
+    $(document).on("click",".make-default-address", function(){
+        let id = $(this).attr("data-address-id");
+        let this_val = $(this)
+
+        $.ajax({
+            url: "make-default-address/",
+            data:{
+                "id":id
+            },
+            dataType: "json",
+            beforeSend: function(){
+                console.log("Updating Status.....");
+            },
+            success: function(response){
+                if(response.status == true){
+                    $(".check").hide();
+                    $(".action_btn").show();
+
+                    $(".check-"+id).show();
+                    $(".button-"+id).hide();
+                }
+            }
+        })
+    })
+
+    // add to wishlist
+    $(document).on("click",".add-to-wishlist",function(){
+        let product_id = $(this).attr("data-product-item");
+        let this_val = $(this);
+        $.ajax({
+            url: "add-to-wishlist/",
+            data:{
+                "id":product_id
+            },
+            dataType: "json",
+            beforeSend: function(){
+                console.log("Adding to Wishlist.....");
+            },
+            success: function(response){
+                if(response.status == true){
+                    alert("Product added into wishlist.");
+                }else{
+                    alert("Product Already Exist in wishlist.")
+                }
+            }
+        })
+    })
 });

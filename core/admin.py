@@ -28,6 +28,7 @@ class WishlistAdmin(admin.ModelAdmin):
     list_display = ['user','product','created_at']
 
 class AddressAdmin(admin.ModelAdmin):
+    list_editable = ['address', 'status']
     list_display = ['user','address','status']
     
     

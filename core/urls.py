@@ -1,5 +1,29 @@
 from django.urls import include, path
-from core.views import index, category_list_view, product_list_view, product_detail_view, category_products_list_view, vendor_list_view, vendor_detail_view, tag_list_view, ajax_add_review, search_view, filter_products, add_to_cart, cart_view, delete_item_from_cart, update_item_from_cart, checkout_view, payment_completed_view, payment_failed_view, customer_dashboard
+from core.views import (
+    index,
+    category_list_view,
+    product_list_view,
+    product_detail_view,
+    category_products_list_view,
+    vendor_list_view,
+    vendor_detail_view,
+    tag_list_view,
+    ajax_add_review,
+    search_view,
+    filter_products,
+    add_to_cart,
+    cart_view,
+    delete_item_from_cart,
+    update_item_from_cart,
+    checkout_view,
+    payment_completed_view,
+    payment_failed_view,
+    customer_dashboard,
+    order_detail,
+    make_default_address,
+    add_to_wishlist,
+    wishlist
+    )
 
 app_name = "core"
 urlpatterns = [
@@ -46,7 +70,7 @@ urlpatterns = [
     path("checkout/", checkout_view, name="checkout"),
     
     # paypal payment
-    path("paypal/",include('paypal.standard.ipn.urls')),
+    # path("paypal/",include('paypal.standard.ipn.urls')),
     
     # payment successfull
     path("payment-completed/", payment_completed_view, name="payment-completed"),
@@ -56,4 +80,14 @@ urlpatterns = [
     
     # user dashboard
     path("dashboard/", customer_dashboard, name="dashboard"),
+    
+    # order detail
+    path("dashboard/order/<int:id>/", order_detail, name="order-detail"),
+    
+    # make default address
+    path("dashboard/make-default-address/", make_default_address, name="make-default-address"),
+
+    # make default address
+    path("add-to-wishlist/", add_to_wishlist, name="add-to-wishlist"),
+    path("wishlist/", wishlist, name="wishlist"),
 ]

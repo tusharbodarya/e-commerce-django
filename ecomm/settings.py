@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "taggit",
     "ckeditor",
-    "paypal.standard.ipn",
+    # "paypal.standard.ipn",
     "core",
     "userauths",
 ]
@@ -171,4 +171,4 @@ CKEDITOR_CONFIGS = {
     },
 }
 
-PAYPAL_TEST = True
+# PAYPAL_TEST = True
